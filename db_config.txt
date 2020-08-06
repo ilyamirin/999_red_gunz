@@ -1,5 +1,5 @@
-telegram_bot
-xYRnvmyrTj8Lfnn7
+user_bot
+qwerty123
 localhost
-bot_tg
+bot_database
 
