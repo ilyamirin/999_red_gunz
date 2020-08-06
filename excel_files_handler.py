@@ -125,5 +125,3 @@ def get_deps_data(bill_id, region):
     for dep in parties_deps.keys():
         deps_data.append(f"{dep}({parties_deps[dep]}) - {votes[dep]}")
     return deps_data
-
-# res = get_deps_data('123', 'г. Москва')
