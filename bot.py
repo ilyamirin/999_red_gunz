@@ -53,6 +53,13 @@ VOTE = 1  # for vote conversation handler
 REGION = 1  # for start conversation handler
 EXCEL_FILE, DOCX_FILE, PDF_FILE, VOTES_FILE, BILL_ACCEPT = range(5)  # for add_bill conversation handler
 
+with open('config.txt', 'r') as file:
+    host = file.readline().strip()
+    port = file.readline().strip()
+    web_hook_link = file.readline().strip()
+    admin_id = file.readline().strip()
+    TOKEN = file.readline().strip()
+
 BOT = telegram.Bot(token=TOKEN)
 updater = Updater(bot=BOT, use_context=True)
 dispatcher = updater.dispatcher
@@ -626,13 +633,6 @@ def set_webhook(link):
 
 # bot start with webhook
 if __name__ == '__main__':
-
-    with open('config.txt','r') as file:
-        host = file.readline().strip()
-        port = file.readline().strip()
-        web_hook_link = file.readline().strip()
-        admin_id = file.read_line().strip()
-        TOKEN = file.read_line().strip()
 
     is_set = set_webhook(web_hook_link)
     if is_set.ok:
