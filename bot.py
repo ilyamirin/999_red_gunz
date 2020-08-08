@@ -46,6 +46,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram import ReplyKeyboardRemove
 from telegram.ext import BaseFilter
+from telegram.utils.request import Request
 
 global BOT
 global TOKEN
@@ -60,7 +61,7 @@ with open('config.txt', 'r') as file:
     admin_id = file.readline().strip()
     TOKEN = file.readline().strip()
 
-BOT = telegram.Bot(token=TOKEN)
+BOT = telegram.Bot(token=TOKEN, request = Request(con_pool_size=10))
 updater = Updater(bot=BOT, use_context=True)
 dispatcher = updater.dispatcher
 
@@ -437,7 +438,7 @@ def get_bill(update: Updater, context: CallbackContext):
 def add_bill(update: Updater, context: CallbackContext):
     chat_id = update.effective_chat.id
     logger.warning(f"user {chat_id} add_bill")
-    if chat_id != admin_id:
+    if chat_id != int(admin_id):
         # end conversation cause its for admin only
         help_message(update, context)
         return ConversationHandler.END

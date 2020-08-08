@@ -22,7 +22,7 @@ def filter_to_bool(x):
 
 def filter_date(date):
     try:
-        _ = datetime.strptime(date, "%d.%m.%Y")
+        _ = datetime.strptime(date, "%Y-%m-%d")
         return date
     except Exception as e:
         raise e
