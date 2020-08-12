@@ -190,9 +190,10 @@ def add_excel_file(update: Updater, context: CallbackContext):
                 return ConversationHandler.END
 
         else:
-            raise Exception("Error while adding bill with excel")
+            raise Exception("Законопроект уже есть!")
     except Exception as e:
         update.message.reply_text(
+            e.args[0] + '\n' +
             'Увы, произошла ошибка :('
         )
         logger.exception(e)
@@ -267,12 +268,20 @@ def add_pdf_file(update: Updater, context: CallbackContext):
 def add_vote_results(update: Updater, context: CallbackContext):
     try:
         file = update.message.document
+        context.user_data['vote_file'] = file
+
         file_name = file['file_name']
+
+        file = file.get_file().download_as_bytearray()
+        file = bytes(file)
+
+        if not excel.filter_deps_data(file):
+            return ConversationHandler.END
+
         if not check_file_format(update, file_name, '.xlsx'):
             return ConversationHandler.END
-        logger.info(f"Got file {file_name}")
 
-        context.user_data['vote_file'] = file
+        logger.info(f"Got file {file_name}")
 
         update.message.reply_text(
             "Подтвердите добавление законопроекта(/cancel - нет, остальное - да) :",
@@ -281,6 +290,7 @@ def add_vote_results(update: Updater, context: CallbackContext):
 
     except Exception as e:
         update.message.reply_text(
+            e.args[0] + '\n' +
             'Увы, произошла ошибка :('
         )
         logger.exception(e)
