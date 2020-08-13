@@ -103,7 +103,12 @@ def processed_answer(answer: dict):
 
 # Additional functions for sending data
 
-def send_file(chat_id: str, file_path: str):
+def send_file(chat_id: str, file_path: str, file_id=None):
+    if file_id:
+        file_properties = BOT.send_document(chat_id, file_id)
+        logger.info(f'Asked by {chat_id} file {file_id} was sent by ID')
+        return file_properties
+
     file_check = os.path.exists(file_path)
     if file_check:
         file_properties = BOT.send_document(chat_id, open(file_path, 'rb'))
@@ -151,6 +156,7 @@ def add_excel_file(update: Updater, context: CallbackContext):
     try:
         file = update.message.document
         file_name = file['file_name']
+
         if not check_file_format(update, file_name, '.xlsx'):
             return ConversationHandler.END
         logger.info(f"Got file {file_name}")
@@ -204,6 +210,8 @@ def add_docx_file(update: Updater, context: CallbackContext):
     try:
         file = update.message.document
         file_name = file['file_name']
+        note_id = file.file_id
+        context.user_data['bill_data']['note_id'] = note_id
         if not check_file_format(update, file_name, '.docx'):
             return ConversationHandler.END
         logger.info(f"Got file {file_name}")
@@ -240,6 +248,8 @@ def add_pdf_file(update: Updater, context: CallbackContext):
     try:
         file = update.message.document
         file_name = file['file_name']
+        pdf_id = file.file_id
+        context.user_data['bill_data']['pdf_id'] = pdf_id
         if not check_file_format(update, file_name, '.pdf'):
             return ConversationHandler.END
         logger.info(f"Got file {file_name}")
@@ -414,11 +424,12 @@ def get_bill(update: Updater, context: CallbackContext):
                         context.user_data['bill_title'],
                     )
 
-                    pdf_path, note_path = dbc.get_files_paths(context.user_data['bill_id'])
-                    if pdf_path:
-                        send_file(chat_id, pdf_path)
-                    if note_path:
-                        send_file(chat_id, note_path)
+                    (pdf_path, pdf_id), (note_path, note_id) = dbc.get_files_ids_paths(context.user_data['bill_id'])
+                    if pdf_path or pdf_id:
+                        send_file(chat_id, pdf_path, pdf_id)
+                    if note_path or note_id:
+                        logger.info(note_id)
+                        send_file(chat_id, note_path, note_id)
 
                 update.message.reply_text(
                     'Введите свой голос:\n 1 - За\n 2 - Против\n 3 - Воздержаться\n /cancel - остановить голосование',

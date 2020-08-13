@@ -56,7 +56,9 @@ class Bills(Base):
     title = Column(String)
     date = Column(Date, nullable=False)
     is_note = Column(Boolean, nullable=False)
+    note_id = Column(String, nullable=True)
     is_pdf = Column(Boolean, nullable=False)
+    pdf_id = Column(String, nullable=True)
     is_secret = Column(Boolean, nullable=False)
     vote_for = Column(Integer, nullable=False)
     vote_against = Column(Integer, nullable=False)
@@ -116,7 +118,9 @@ def add_bill(bill_data):
             title=bill_data['title'],
             date=bill_data['date'],
             is_note=bill_data['is_note'],
+            note_id=bill_data['note_id'],
             is_pdf=bill_data['is_pdf'],
+            pdf_id=bill_data['pdf_id'],
             is_secret=bill_data['is_secret'],
             vote_for=bill_data['vote_for'],
             vote_against=bill_data['vote_against'],
@@ -226,17 +230,22 @@ def get_user_region(user_id):
 
 
 # GET PATH FOR FILES
-def get_files_paths(bill_id):
+def get_files_ids_paths(bill_id):
     session = Session()
     bill = session.query(Bills).filter_by(bill_id=bill_id).one()
     pdf_path = None
     note_path = None
+    pdf_id = None
+    note_id = None
     if bill.is_note:
         note_path = f'notes/{bill_id}.docx'
+    if bill.note_id:
+        note_id = bill.note_id
     if bill.is_pdf:
         pdf_path = f'pdf_docs/{bill_id}.pdf'
-    return pdf_path, note_path
-
+    if bill.pdf_id:
+        pdf_id = bill.pdf_id
+    return (pdf_path, pdf_id), (note_path, note_id)
 
 def delete_bill_by_id(bill_id):
     try:
