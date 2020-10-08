@@ -252,7 +252,8 @@ def delete_bill_by_id(bill_id):
 
 
 def drop_all():
-    drop_table('new_users')
-    drop_table('new_bills')
-    drop_table('new_answers')
+   drop_table('Users')
+    drop_table('Bills')
+    drop_table('Answers')
     return True
+

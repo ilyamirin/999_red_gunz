@@ -5,7 +5,7 @@ import db_connector as dbc
 
 
 def filter_none(text):
-    if not text:
+    if not text or text != text:  # None or NAN
         raise ValueError('Пустая строка в BILL_ID или TITLE')
     else:
         return text
@@ -22,8 +22,14 @@ def filter_to_bool(x):
 
 def filter_date(date):
     try:
-        _ = datetime.strptime(date, "%Y-%m-%d")
-        return date
+        if type(date) == str:
+            _ = datetime.strptime(date, "%Y-%m-%d")
+            return date
+        elif type(date) == type(pd.Timestamp(1)):
+            date = date.date().__str__()
+            return date
+        else:
+            raise TypeError('Тип даты не распознан!')
     except Exception as e:
         raise e
 
@@ -38,8 +44,8 @@ def filter_vote(vote):
 def add_bill_excel(sheet):
     try:
         page = read_excel(sheet)
-        correct_titles = ['BILL_ID', 'TITLE', 'DATE', 'IS_NOTE', 'IS_PDF', 'IS_SECRET', 'VOTE_FOR', 'VOTE_AGAINST', 'NOT_VOTED',
-                          'ABSTAINED']
+        correct_titles = ['BILL_ID', 'TITLE', 'DATE', 'IS_NOTE', 'IS_PDF', 'IS_SECRET', 'VOTE_FOR', 'VOTE_AGAINST',
+                          'NOT_VOTED','ABSTAINED']
         if page.columns.to_list() != correct_titles:
             raise ValueError('Неверно указаны заголовки.')
         bill = page.iloc[0]
@@ -125,3 +131,14 @@ def get_deps_data(bill_id, region):
     for dep in parties_deps.keys():
         deps_data.append(f"{dep}({parties_deps[dep]}) - {votes[dep]}")
     return deps_data
+
+
+def filter_deps_data(deps_data):
+    df = read_excel(deps_data)
+    if df.columns.to_list() != ['DEPUTIES', 'VOTES']:
+        raise ValueError('Ошибка с заголовками!')
+    if df.dtypes['DEPUTIES'].name != 'object' or df.dtypes['VOTES'] not in ['float64', 'int64']:
+        raise TypeError('Ошибка типов значений в колонках.')
+    if df.shape != (444,2):
+        raise ValueError('Количество строк в таблице не равно 444')
+    return True
