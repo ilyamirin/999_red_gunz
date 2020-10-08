@@ -1,3 +1,9 @@
 __pycache__/
 venv/
 .idea/
+notes/
+pdf_docs/
+vote_results/
+nohup.out
+*.log
+logs/

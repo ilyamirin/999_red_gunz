@@ -186,7 +186,8 @@ def get_bill_by_id(user_id,bill_id):
 def get_new_bill_by_id(user_id):
     session = Session()
     old_bill_ids = session.query(Answers.bill_id).filter_by(user_id=str(user_id)).all()
-    bill = session.query(Bills).filter(Bills.bill_id.notin_(old_bill_ids)).order_by(Bills.date.desc()).first()
+    #bill = session.query(Bills).filter(Bills.bill_id.notin_(old_bill_ids)).order_by(Bills.date.desc()).first()
+    bill = session.query(Bills).order_by(Bills.date.desc()).first()
     if bill:
         return bill
     else:
