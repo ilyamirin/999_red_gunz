@@ -645,8 +645,9 @@ def set_webhook(link):
 # bot start with webhook
 if __name__ == '__main__':
 
-    is_set = set_webhook(web_hook_link)
-    if is_set.ok:
-        updater.start_webhook(listen=host,
-                              port=int(port))
-        updater.idle()
+    #is_set = set_webhook(web_hook_link)
+    #if is_set.ok:
+    #updater.start_webhook(listen=host,
+    #                      port=int(port))
+    updater.start_polling()
+    updater.idle()
